@@ -1,17 +1,18 @@
 const express = require("express");
-
+const {adminAuth} = require("./middlewares/auth");
 const app = express();
 
-app.get("/user", (req, res, next) => {
-  console.log("1st route handler");
-  next();
-  // res.send("1st response!!!");
-})
+app.use("/admin", adminAuth);
 
-app.post("/user", (req, res, next) => {
-  console.log("2nd route handler");
-  res.send("2nd response!!!");
-})
+app.get("/admin/getData", (req, res) => {
+  res.send("All the admin data");
+});
+app.get("/admin/updatedata", (req, res) => {
+  res.send("All the admin data updated");
+});
+app.get("/admin/removedata", (req, res) => {
+  res.send("All the admin data removed");
+});
 
 app.listen(7777, () => {
   console.log("Server is successfully running....");
