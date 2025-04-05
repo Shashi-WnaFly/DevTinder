@@ -17,21 +17,18 @@ app.get("/user", async (req, res) => {
   }
 });
 
-
 app.patch("/user", async (req, res) => {
   const userId = req.body.userId;
   const data = req.body;
-  try{
+  try {
     await User.findByIdAndUpdate(userId, data);
     res.send("user updated successfully.");
-  }catch(err){
+  } catch (err) {
     res.status(401).send("Something went wrong.");
   }
-})
-
+});
 
 app.get("/feed", async (req, res) => {
-
   try {
     const users = await User.find({});
     res.send(users);
@@ -47,20 +44,20 @@ app.post("/signup", async (req, res) => {
     await userObj.save();
     res.send("User created successfully.");
   } catch (err) {
-    res.status(404).send("Something went wrong.");
+    res.status(404).send("Something went wrong." + err.message);
   }
 });
 
 app.delete("/user", async (req, res) => {
   const userId = req.body.userId;
 
-  try{
+  try {
     await User.findByIdAndDelete(userId);
     res.send("User deleted successfully.");
-  }catch(err){
+  } catch (err) {
     res.status(400).send("Something went wrong.");
   }
-})
+});
 
 connectDB()
   .then(() => {
