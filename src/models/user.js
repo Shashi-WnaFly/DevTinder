@@ -34,9 +34,12 @@ const userSchema = new mongoose.Schema(
     },
     skill: {
       type: [String],
+    //   maxLength: 20, ??? not working why
     },
     about: {
       type: String,
+      maxLength: 100,
+      trim: true,
     },
     photoUrl: {
       type: String,

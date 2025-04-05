@@ -21,10 +21,29 @@ app.patch("/user", async (req, res) => {
   const userId = req.body.userId;
   const data = req.body;
   try {
-    await User.findByIdAndUpdate(userId, data);
+    const ALLOWED_UPDATES = [
+      "userId",
+      "skill",
+      "age",
+      "photoUrl",
+      "about",
+      "gender",
+    ];
+    const isUpdateAllowed = Object.keys(data).every((k) =>
+      ALLOWED_UPDATES.includes(k)
+    );
+    
+    if (!isUpdateAllowed) 
+      throw new Error("Update not Allowed");
+
+    if(data.skill.length > 20)
+      throw new Error("skill cannot be more than 20")
+
+    await User.findByIdAndUpdate(userId, data, { runValidators: true });
     res.send("user updated successfully.");
+
   } catch (err) {
-    res.status(401).send("Something went wrong.");
+    res.status(401).send("Something went wrong. " + err.message);
   }
 });
 
