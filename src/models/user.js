@@ -7,11 +7,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      minLength: 4,
       maxLength: 50,
     },
     lastName: {
       type: String,
       trim: true,
+      maxLength: 50,
+      minLength: 3,
     },
     emailId: {
       type: String,
@@ -21,7 +24,7 @@ const userSchema = new mongoose.Schema(
       trim: true,
       validate: (value) => {
         if(!validator.isEmail(value))
-          throw new Error("EmailId is not valid!!");
+          throw new Error("Email is not valid!!");
       }
     },
     password: {
@@ -36,6 +39,7 @@ const userSchema = new mongoose.Schema(
     age: {
       type: Number,
       min: 18,
+      max: 110,
     },
     gender: {
       type: String,
@@ -51,7 +55,7 @@ const userSchema = new mongoose.Schema(
     },
     about: {
       type: String,
-      maxLength: 100,
+      maxLength: 150,
       trim: true,
     },
     photoUrl: {

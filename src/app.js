@@ -2,8 +2,55 @@ const express = require("express");
 const app = express();
 const connectDB = require("./config/database");
 const User = require("./models/user");
+const { signupValidation } = require("./utils/validation");
+const bcrypt = require("bcrypt");
+const validator = require("validator");
 
 app.use(express.json());
+
+app.post("/signup", async (req, res) => {
+  try {
+    signupValidation(req);
+    const {firstName, lastName, emailId, password} = req.body;
+    const hashPassword = await bcrypt.hash(password, 10);
+    const user = new User({
+      firstName,
+      lastName,
+      emailId,
+      password: hashPassword
+    })
+    await user.save();
+    res.send("User created successfully.");
+  } catch (err) {
+    res.status(404).send("ERROR : " + err.message);
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try{
+    const {emailId, password} = req.body;
+
+    if(!validator.isEmail(emailId))
+      throw new Error("please enter a valid email address!!!");
+
+    const user = await User.findOne({emailId});
+    console.log(user);
+
+    if(!user)
+      throw new Error("user not found!!!");
+
+    const match = await bcrypt.compare(password, user.password);
+
+    if(match)
+      res.send("user logged in successfully.");
+    else
+      throw new Error("password is incorrect!!!");
+
+  }
+  catch(err){
+    res.status(400).send("ERROR : " + err.message);
+  }
+})
 
 app.get("/user", async (req, res) => {
   const userEmail = req.body.emailId;
@@ -13,7 +60,7 @@ app.get("/user", async (req, res) => {
     if (users.length == 0) res.send("User not found");
     res.send(users);
   } catch (err) {
-    res.status(401).send("Something went wrong.");
+    res.status(401).send("ERROR : " + err.message);
   }
 });
 
@@ -56,16 +103,6 @@ app.get("/feed", async (req, res) => {
   }
 });
 
-app.post("/signup", async (req, res) => {
-  const userObj = new User(req.body);
-
-  try {
-    await userObj.save();
-    res.send("User created successfully.");
-  } catch (err) {
-    res.status(404).send("Something went wrong." + err.message);
-  }
-});
 
 app.delete("/user", async (req, res) => {
   const userId = req.body.userId;
