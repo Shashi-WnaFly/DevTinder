@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 
 const userSchema = new mongoose.Schema(
   {
@@ -18,10 +19,19 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      validate: (value) => {
+        if(!validator.isEmail(value))
+          throw new Error("EmailId is not valid!!");
+      }
     },
     password: {
       type: String,
       required: true,
+      min: 8,
+      validate: (value) => {
+        if(!validator.isStrongPassword(value))
+          throw new Error("Enter a strong password!!!");
+      }
     },
     age: {
       type: Number,
@@ -29,8 +39,11 @@ const userSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      required: true,
       trim: true,
+      validate: (value) => {
+        if(!["male", "female", "others"].includes(value))
+          throw new Error("gender is not valid!");
+      }
     },
     skill: {
       type: [String],
@@ -43,6 +56,11 @@ const userSchema = new mongoose.Schema(
     },
     photoUrl: {
       type: String,
+      default: "https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI=",
+      validate: (value) => {
+        if(!validator.isURL(value))
+          throw new Error("Invalid photo url address!!");
+      }
     },
   },
   { timestamps: true }
