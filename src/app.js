@@ -11,14 +11,29 @@ app.use(express.json());
 app.post("/signup", async (req, res) => {
   try {
     signupValidation(req);
-    const {firstName, lastName, emailId, password} = req.body;
+    const {
+      firstName,
+      lastName,
+      emailId,
+      password,
+      gender,
+      skill,
+      age,
+      about,
+      photoUrl,
+    } = req.body;
     const hashPassword = await bcrypt.hash(password, 10);
     const user = new User({
       firstName,
       lastName,
       emailId,
-      password: hashPassword
-    })
+      gender,
+      skill,
+      age,
+      about,
+      photoUrl,
+      password: hashPassword,
+    });
     await user.save();
     res.send("User created successfully.");
   } catch (err) {
@@ -27,30 +42,26 @@ app.post("/signup", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  try{
-    const {emailId, password} = req.body;
+  try {
+    const { emailId, password } = req.body;
 
-    if(!validator.isEmail(emailId))
-      throw new Error("please enter a valid email address!!!");
+    if (!validator.isEmail(emailId)) throw new Error("Invalid credentials");
 
-    const user = await User.findOne({emailId});
-    console.log(user);
+    const user = await User.findOne({ emailId: emailId });
 
-    if(!user)
-      throw new Error("user not found!!!");
+    if (!user) throw new Error("Invalid credentials");
 
     const match = await bcrypt.compare(password, user.password);
 
-    if(match)
+    if (match) 
       res.send("user logged in successfully.");
-    else
-      throw new Error("password is incorrect!!!");
-
-  }
-  catch(err){
+    else 
+      throw new Error("Invalid credentials");
+  } 
+  catch (err) {
     res.status(400).send("ERROR : " + err.message);
   }
-})
+});
 
 app.get("/user", async (req, res) => {
   const userEmail = req.body.emailId;
@@ -79,16 +90,13 @@ app.patch("/user", async (req, res) => {
     const isUpdateAllowed = Object.keys(data).every((k) =>
       ALLOWED_UPDATES.includes(k)
     );
-    
-    if (!isUpdateAllowed) 
-      throw new Error("Update not Allowed");
 
-    if(data.skill.length > 20)
-      throw new Error("skill cannot be more than 20")
+    if (!isUpdateAllowed) throw new Error("Update not Allowed");
+
+    if (data.skill.length > 20) throw new Error("skill cannot be more than 20");
 
     await User.findByIdAndUpdate(userId, data, { runValidators: true });
     res.send("user updated successfully.");
-
   } catch (err) {
     res.status(401).send("Something went wrong. " + err.message);
   }
@@ -102,7 +110,6 @@ app.get("/feed", async (req, res) => {
     res.status(401).send("Something went wrong.");
   }
 });
-
 
 app.delete("/user", async (req, res) => {
   const userId = req.body.userId;
