@@ -5,8 +5,10 @@ const User = require("./models/user");
 const { signupValidation } = require("./utils/validation");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
+const cookieParser = require("cookie-parser");
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/signup", async (req, res) => {
   try {
@@ -45,16 +47,20 @@ app.post("/login", async (req, res) => {
   try {
     const { emailId, password } = req.body;
 
-    if (!validator.isEmail(emailId)) throw new Error("Invalid credentials");
+    if (!validator.isEmail(emailId)) 
+      throw new Error("Invalid credentials");
 
     const user = await User.findOne({ emailId: emailId });
 
-    if (!user) throw new Error("Invalid credentials");
+    if (!user) 
+      throw new Error("Invalid credentials");
 
     const match = await bcrypt.compare(password, user.password);
 
-    if (match) 
+    if (match) {
+      res.cookie("token", "wtaggeagroinaiofnainefoanefinwefsakqnionfe");
       res.send("user logged in successfully.");
+    }
     else 
       throw new Error("Invalid credentials");
   } 
@@ -62,6 +68,12 @@ app.post("/login", async (req, res) => {
     res.status(400).send("ERROR : " + err.message);
   }
 });
+
+app.get("/profile", async (req, res) => {
+  const cookies = req.cookies;
+  console.log(cookies);
+  res.send("reading cookies");
+})
 
 app.get("/user", async (req, res) => {
   const userEmail = req.body.emailId;
