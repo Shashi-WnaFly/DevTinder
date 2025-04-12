@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      minLength: 4,
+      minLength: 2,
       maxLength: 50,
     },
     lastName: {
@@ -53,11 +53,11 @@ const userSchema = new mongoose.Schema(
     },
     skills: {
       type: [String],
-    //   maxLength: 20, ??? not working why
     },
     about: {
       type: String,
       maxLength: 150,
+      minLength: 0,
       trim: true,
     },
     photoUrl: {

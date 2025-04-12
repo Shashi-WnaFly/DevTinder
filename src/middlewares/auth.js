@@ -30,14 +30,6 @@ const userAuth = async (req, res, next) => {
 
 }
 
-const validateEditProfile = (req) => {
-  const allowedFields = ["firstName", "lastName", "about", "photoUrl", "skills", "age", "gender"];
-  const isEditAllowed = Object.keys(req.body).every((field) => allowedFields.includes(field));
-  
-  return isEditAllowed;
-}
-
 module.exports = {
     userAuth,
-    validateEditProfile,
 }
