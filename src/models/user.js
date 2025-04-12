@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema(
           throw new Error("gender is not valid!");
       }
     },
-    skill: {
+    skills: {
       type: [String],
     //   maxLength: 20, ??? not working why
     },
