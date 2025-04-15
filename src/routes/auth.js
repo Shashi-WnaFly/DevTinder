@@ -12,23 +12,13 @@ router.post("/signup", async (req, res) => {
       firstName,
       lastName,
       emailId,
-      password,
-      gender,
-      skill,
-      age,
-      about,
-      photoUrl,
+      password
     } = req.body;
     const hashPassword = await bcrypt.hash(password, 10);
     const user = new User({
       firstName,
       lastName,
       emailId,
-      gender,
-      skill,
-      age,
-      about,
-      photoUrl,
       password: hashPassword,
     });
     await user.save();
