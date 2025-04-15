@@ -43,6 +43,11 @@ const validatePasswordUpdate = async (req) => {
     return userDBPassword;
 }
 
+const validateStatusField = (status) => {
+  const allowedFields = ["Ignore", "Interested"];
+  return !allowedFields.includes(status);
+} 
+
 module.exports = {
     signupValidation,
     validateEditProfile,

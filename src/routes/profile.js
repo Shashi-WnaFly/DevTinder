@@ -48,7 +48,7 @@ router.patch("/profile/password", userAuth, async (req, res) => {
     const user = req.user;
     user.password = passwordHash;
     user.save();
-    res.send("Password Changed Successfully.");
+    res.send("Password Updated Successfully.");
 
    }catch (err) {
     res.status(400).send("ERROR : " + err.message);
