@@ -18,7 +18,17 @@ const connectionRequestSchema = new mongoose.Schema({
             values: ["interested", "ignore", "accepted", "rejected"],
             message: `{VALUE} is incorrect status type`,
         },
+        
     }
+}, { timestamps: true })
+
+connectionRequestSchema.index({fromUserId: 1, toUserId: 1});
+
+connectionRequestSchema.pre("save", function (next) {
+    const ConnectionRequest = this;
+    if(ConnectionRequest.fromUserId.equals(ConnectionRequest.toUserId))
+        throw new Error("cannot sent a connection request to yourself.");
+    next(); // never mish the calling next();
 })
 
 module.exports = mongoose.model("ConnectionRequest", connectionRequestSchema);

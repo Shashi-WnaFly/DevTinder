@@ -41,16 +41,10 @@ const validatePasswordUpdate = async (req) => {
     const userDBPassword = await bcrypt.compare(req.body.oldPassword, passwordHash);
   
     return userDBPassword;
-}
-
-const validateConnectionRequestStatus = (status) => {
-  const allowedFields = ["ignore", "interested"];
-  return allowedFields.includes(status);
 } 
 
 module.exports = {
     signupValidation,
     validateEditProfile,
     validatePasswordUpdate,
-    validateConnectionRequestStatus,
 }
