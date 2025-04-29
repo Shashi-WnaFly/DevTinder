@@ -65,7 +65,7 @@ router.post("/request/review/:status/:requestId", userAuth, async (req, res) => 
 
     connectionRequest.status = status;
 
-    const data = await ConnectionRequest.save();
+    const data = await connectionRequest.save();
 
     res.json({message : "The Connection Request is " + status, data});
   }
