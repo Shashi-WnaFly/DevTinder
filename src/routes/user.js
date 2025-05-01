@@ -23,26 +23,28 @@ router.get("/user/requests/received", userAuth, async (req, res) => {
 });
 
 router.get("/user/connections", userAuth, async (req, res) => {
-    try{
-        const loggedInUser = req.user;
+  try {
+    const loggedInUser = req.user;
 
-        const connections = await ConnectionRequest.find({
-            $or : [{toUserId: loggedInUser._id, status: "accepted"},
-                {fromUserId: loggedInUser._id, status: "accepted"}
-            ]
-        }).populate("fromUserId", USER_SAFE_DATA).populate("toUserId", USER_SAFE_DATA);
+    const connections = await ConnectionRequest.find({
+      $or: [
+        { toUserId: loggedInUser._id, status: "accepted" },
+        { fromUserId: loggedInUser._id, status: "accepted" },
+      ],
+    })
+      .populate("fromUserId", USER_SAFE_DATA)
+      .populate("toUserId", USER_SAFE_DATA);
 
-        const data = connections.map((row) => {
-            if(row.fromUserId._id.toString() == loggedInUser._id.toString())
-                return row.toUserId;
-            return row.fromUserId;
-        });
+    const data = connections.map((row) => {
+      if (row.fromUserId._id.toString() == loggedInUser._id.toString())
+        return row.toUserId;
+      return row.fromUserId;
+    });
 
-        res.json({data: data});
-    }
-    catch(err){
-        res.status(400).json({message: err.message});
-    }
-})
+    res.json({ data: data });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
 
 module.exports = router;
