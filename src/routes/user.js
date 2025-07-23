@@ -58,6 +58,7 @@ router.get("/user/feed", userAuth, async (req, res) => {
     .select("toUserId fromUserId");
     
     let hiddenUsers = new Set();
+    hiddenUsers.add(loggedInUserId);
 
     connections.forEach((row) => {
       hiddenUsers.add(row.fromUserId.toString());
@@ -65,7 +66,7 @@ router.get("/user/feed", userAuth, async (req, res) => {
     })
 
     const feedUsers = await User.find({
-      _id: { $nin : Array.from(hiddenUsers)};
+      _id: { $nin : Array.from(hiddenUsers)}
     }).select(USER_SAFE_DATA);
 
     res.send(feedUsers);
