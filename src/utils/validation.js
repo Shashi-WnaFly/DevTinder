@@ -37,8 +37,9 @@ const validateEditProfile = (req) => {
 const validatePasswordUpdate = async (req) => {
   
     const passwordHash = req.user.password;
+    const { password } = req.params;
   
-    const userDBPassword = await bcrypt.compare(req.body.oldPassword, passwordHash);
+    const userDBPassword = await bcrypt.compare(password, passwordHash);
   
     return userDBPassword;
 } 

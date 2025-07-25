@@ -38,13 +38,14 @@ router.post("/profile/edit", userAuth, async (req, res) => {
 router.patch("/profile/password", userAuth, async (req, res) => {
    try{
 
-    if(!validator.isStrongPassword(req.body.newPassword))
+    const { password } = req.params;
+    if(!validator.isStrongPassword(password))
       throw new Error("Please Enter A Strong Password As A New Password!!");
 
     if(!validatePasswordUpdate(req))
       throw new Error("Password was not correct!!!");
 
-    const passwordHash = await bcrypt.hash(req.body.newPassword, 10);
+    const passwordHash = await bcrypt.hash(password, 10);
     const user = req.user;
     user.password = passwordHash;
     user.save();
