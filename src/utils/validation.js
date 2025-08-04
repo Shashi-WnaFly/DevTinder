@@ -26,7 +26,7 @@ const signupValidation = (req) => {
 const validateEditProfile = (req) => {
   const allowedFields = ["firstName", "lastName", "about", "photoUrl", "skills", "age", "gender"];
 
-  if(req.body.skills.length > 20)
+  if(req.body?.skills?.length > 20)
     throw new Error("skills should not more than 20!!");
 
   const isEditAllowed = Object.keys(req.body).every((field) => allowedFields.includes(field));
