@@ -36,7 +36,7 @@ router.post("/request/send/:status/:toUserId", userAuth, async (req, res) => {
 
     const data = await curConnectionRequest.save();
 
-    res.send({
+    res.json({
       message: "Your connection request send successfully.",
       data: data
     });
