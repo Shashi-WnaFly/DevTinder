@@ -42,7 +42,7 @@ router.get("/user/connections", userAuth, async (req, res) => {
       return row.fromUserId;
     });
 
-    res.json({ data: data });
+    res.json({ message: "Connections fetched successfully.", data: data });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
