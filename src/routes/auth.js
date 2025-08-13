@@ -1,19 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const {signupValidation} = require("../utils/validation");
+const { signupValidation } = require("../utils/validation");
 const User = require("../models/user");
 const validator = require("validator");
 
 router.post("/signup", async (req, res) => {
   try {
     signupValidation(req);
-    const {
-      firstName,
-      lastName,
-      emailId,
-      password
-    } = req.body;
+    const { firstName, lastName, emailId, password } = req.body;
     const hashPassword = await bcrypt.hash(password, 10);
     const user = new User({
       firstName,
@@ -21,8 +16,12 @@ router.post("/signup", async (req, res) => {
       emailId,
       password: hashPassword,
     });
-    await user.save();
-    res.send("User created successfully.");
+    const signUpUser = await user.save();
+    console.log(signUpUser);
+    const token = await signUpUser.getJWT();
+    console.log(token);
+    res.cookie("token", token, { expires: new Date(Date.now() + 9000000) });
+    res.json({ message: "Sign Up successfully.", data: signUpUser });
   } catch (err) {
     res.status(404).send("ERROR : " + err.message);
   }
@@ -44,8 +43,8 @@ router.post("/login", async (req, res) => {
       const token = await user.getJWT();
       res.cookie("token", token, { expires: new Date(Date.now() + 9000000) });
       res.json({
-        message : "login successful 🚀",
-        data : user
+        message: "login successful 🚀",
+        data: user,
       });
     } else throw new Error("Invalid credentials");
   } catch (err) {
