@@ -26,7 +26,6 @@ router.post("/profile/edit", userAuth, async (req, res) => {
     Object.keys(req.body).forEach((key) => (user[key] = req.body[key]));
 
     const updatedData = await user.save();
-    console.log(updatedData);
 
     res.json({
       message: `${user.firstName}, Your profile updated successfully.`,
