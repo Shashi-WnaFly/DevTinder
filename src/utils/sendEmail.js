@@ -4,31 +4,27 @@ const { sesClient } = require("./sesClient");
 const createSendEmailCommand = (toAddress, fromAddress, subject, body) => {
   return new SendEmailCommand({
     Destination: {
-      CcAddresses: [
-      ],
-      ToAddresses: [
-        toAddress,
-      ],
+      CcAddresses: [],
+      ToAddresses: [toAddress],
     },
     Message: {
       Body: {
         Html: {
           Charset: "UTF-8",
-          Data: "<h1>This is the Body of the email</h1>",
+          Data: `<p>${body}</p>`,
         },
         Text: {
           Charset: "UTF-8",
-          Data: body,
+          Data: "testing email",
         },
       },
       Subject: {
         Charset: "UTF-8",
-        Data: subject,
+        Data: `${subject}`,
       },
     },
     Source: fromAddress,
-    ReplyToAddresses: [
-    ],
+    ReplyToAddresses: [],
   });
 };
 
