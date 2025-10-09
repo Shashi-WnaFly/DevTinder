@@ -42,7 +42,7 @@ const validatePasswordUpdate = async (req) => {
     const userDBPassword = await bcrypt.compare(password, passwordHash);
   
     return userDBPassword;
-} 
+}
 
 module.exports = {
     signupValidation,
