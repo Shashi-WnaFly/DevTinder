@@ -25,18 +25,24 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
       validate: (value) => {
-        if(!validator.isEmail(value))
-          throw new Error("Email is not valid!!");
-      }
+        if (!validator.isEmail(value)) throw new Error("Email is not valid!!");
+      },
     },
     password: {
       type: String,
       required: true,
       min: 8,
       validate: (value) => {
-        if(!validator.isStrongPassword(value))
+        if (!validator.isStrongPassword(value))
           throw new Error("Enter a strong password!!!");
-      }
+      },
+    },
+    isPremium: {
+      type: Boolean,
+      default: false,
+    },
+    subscriptionType: {
+      type: String,
     },
     age: {
       type: Number,
@@ -47,9 +53,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
       validate: (value) => {
-        if(!["male", "female", "others"].includes(value))
+        if (!["male", "female", "others"].includes(value))
           throw new Error("gender is not valid!");
-      }
+      },
     },
     skills: {
       type: [String],
@@ -62,11 +68,12 @@ const userSchema = new mongoose.Schema(
     },
     photoUrl: {
       type: String,
-      default: "https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI=",
+      default:
+        "https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI=",
       validate: (value) => {
-        if(!validator.isURL(value))
+        if (!validator.isURL(value))
           throw new Error("Invalid photo url address!!");
-      }
+      },
     },
   },
   { timestamps: true }
@@ -74,14 +81,16 @@ const userSchema = new mongoose.Schema(
 
 userSchema.methods.getJWT = async function () {
   const user = this;
-  const token = await jwt.sign({_id: user._id}, process.env.SECRET_JWT, {expiresIn: "7d"});
+  const token = await jwt.sign({ _id: user._id }, process.env.SECRET_JWT, {
+    expiresIn: "7d",
+  });
   return token;
-}
+};
 
 userSchema.methods.validatePassword = async function (inputPassword) {
   const user = this;
   const isPasswordMatch = await bcrypt.compare(inputPassword, user.password);
   return isPasswordMatch;
-}
+};
 
 module.exports = mongoose.model("User", userSchema);
