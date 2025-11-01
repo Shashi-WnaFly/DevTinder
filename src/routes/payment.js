@@ -67,7 +67,7 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
 
     if (req.body.event == "payment.captured") {
       payment.status = paymentDetails.status;
-      payment.paymentId = paymentDetails._id;
+      payment.paymentId = paymentDetails.id;
       await payment.save();
 
       const user = await User.findById({ _id: payment.userId });
