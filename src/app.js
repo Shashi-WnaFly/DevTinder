@@ -4,6 +4,7 @@ const app = express();
 const connectDB = require("./config/database");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const http = require("http");
 require("./utils/emailSchedule");
 
 app.use(cors({
@@ -18,6 +19,11 @@ const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
 const userRouter = require("./routes/user");
 const paymentRouter = require("./routes/payment");
+const initializeSocket = require('./utils/socket');
+
+const server = http.createServer(app);
+
+initializeSocket(server);
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
@@ -28,7 +34,7 @@ app.use("/", paymentRouter);
 connectDB()
   .then(() => {
     console.log("database is successfully connected.");
-    app.listen(process.env.PORT, () => {
+    server.listen(process.env.PORT, () => {
       console.log("Server is successfully running....");
     });
   })
