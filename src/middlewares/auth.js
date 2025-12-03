@@ -8,7 +8,7 @@ const userAuth = async (req, res, next) => {
     if(!token)
       throw new Error("Invalid token!!!");
 
-    const { _id } = jwt.verify(token, "DEV@tinder$242", (err, obj) => {
+    const { _id } = jwt.verify(token, process.env.SECRET_JWT, (err, obj) => {
       if(obj)
         return obj;
       throw new Error(err);
