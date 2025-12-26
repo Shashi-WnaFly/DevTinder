@@ -57,6 +57,24 @@ const initializeSocket = (server) => {
 
     socket.on("sendMessage", async ({ loggedUserId, targetUserId, text }) => {
       try {
+        const friend = await ConnectionRequest.findOne({
+          $or: [
+            {
+              fromUserId: loggedUserId,
+              toUserId: targetUserId,
+              status: "accepted",
+            },
+            {
+              fromUserId: targetUserId,
+              toUserId: loggedUserId,
+              status: "accepted",
+            },
+          ],
+        });
+        console.log(friend);
+        if (!friend) {
+          throw new Error({ message: "Credentials are invalid!!!" });
+        }
 
         let chat = await Chat.findOne({
           participants: {
