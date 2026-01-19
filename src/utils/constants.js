@@ -1,4 +1,4 @@
 export const subscriptionAmount = {
-    "silver": 499,
+    "silver": "499",
     "gold": "799"
 };

@@ -17,11 +17,12 @@ router.get("/user/requests/received", userAuth, async (req, res) => {
     }).populate("fromUserId", USER_SAFE_DATA);
 
     res.json({
+      success: true,
       message: "Data Fetched Successfully.",
       data: connectionRequests,
     });
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ success: false, message: err.message });
   }
 });
 
@@ -44,9 +45,9 @@ router.get("/user/connections", userAuth, async (req, res) => {
       return row.fromUserId;
     });
 
-    res.json({ message: "Connections fetched successfully.", data: data });
+    res.json({ success: true, message: "Connections fetched successfully.", data: data });
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ success: false, message: err.message });
   }
 });
 
@@ -105,9 +106,9 @@ router.post("/user/send/email", userAuth, async (req, res) => {
 
     await sendEmail.run(subject, `${name}<br/>${message}<br />${fromAddress}`);
 
-    res.json({ message: "Message sent — we will get back to you soon!" });
+    res.json({ success: true, message: "Message sent — we will get back to you soon!" });
   } catch (error) {
-    res.status(201).json({ message: error.message });
+    res.status(201).json({ success: false, message: error.message });
   }
 });
 

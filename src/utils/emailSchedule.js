@@ -23,7 +23,7 @@ cron.schedule("00 08 * * *", async () => {
 
     for (const email of listOfEmails) {
       await sendEmail.run(
-        "Pending friend request to " + email,
+        `Pending friend request to ${email}`,
         "There are so many friend request are pending, please login and accept or reject."
       );
     }

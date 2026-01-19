@@ -17,13 +17,11 @@ router.post("/signup", async (req, res) => {
       password: hashPassword,
     });
     const signUpUser = await user.save();
-    console.log(signUpUser);
     const token = await signUpUser.getJWT();
-    console.log(token);
     res.cookie("token", token, { expires: new Date(Date.now() + 9000000) });
-    res.json({ message: "Sign Up successfully.", data: signUpUser });
+    res.json({ success: true, data: signUpUser });
   } catch (err) {
-    res.status(404).send("ERROR : " + err.message);
+    res.status(404).json({ success: false, message: err.message });
   }
 });
 
@@ -42,20 +40,17 @@ router.post("/login", async (req, res) => {
     if (isPasswordMatch) {
       const token = await user.getJWT();
       res.cookie("token", token, { expires: new Date(Date.now() + 9000000) });
-      res.json({
-        message: "login successful 🚀",
-        data: user,
-      });
+      res.json({ success: true, data: user });
     } else throw new Error("Invalid credentials");
   } catch (err) {
-    res.status(400).send("ERROR : " + err.message);
+    res.status(400).json({ success: false, message: err.message });
   }
 });
 
 router.post("/logout", (req, res) => {
   res
     .cookie("token", null, { expires: new Date(Date.now()) })
-    .send("logout successful");
+    .json({ success: true, message: "logout successful." });
 });
 
 module.exports = router;

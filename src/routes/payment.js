@@ -39,9 +39,13 @@ paymentRouter.post("/payment/create", userAuth, async (req, res) => {
     });
 
     const savedPayment = await payment.save();
-    res.json({ ...savedPayment.toJSON(), key: process.env.RAZORPAY_KEY_ID });
+    res.json({
+      success: true,
+      data: savedPayment.toJSON(),
+      key: process.env.RAZORPAY_KEY_ID,
+    });
   } catch (error) {
-    console.log(error);
+    res.json({ success: false, message: error.message });
   }
 });
 
@@ -51,22 +55,21 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
     const isWebhookValid = validateWebhookSignature(
       JSON.stringify(req.body),
       webhookSignature,
-      process.env.RAZORPAY_WEBHOOK_SECRET
+      process.env.RAZORPAY_WEBHOOK_SECRET,
     );
-    
+
     if (!isWebhookValid) {
-      return res.status(400).json({ msg: "webhook signature is invalid!" });
+      return res.json({ success: false, message: "webhook signature is invalid!" });
     }
-    
+
     const paymentDetails = req.body.payload.payment.entity;
-    console.log(paymentDetails);
 
     const payment = await Payment.findOne({
       orderId: paymentDetails.order_id,
     });
 
+    payment.status = paymentDetails.status;
     if (req.body.event == "payment.captured") {
-      payment.status = paymentDetails.status;
       payment.paymentId = paymentDetails.id;
       await payment.save();
 
@@ -74,16 +77,12 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
 
       user.subscriptionType = payment.notes.subscriptionType;
       user.isPremium = true;
-      await user.save();
     }
-    if (req.body.event == "payment.failed") {
-      payment.status = paymentDetails.status;
-      await payment.save();
-    }
+    await user.save();
 
-    res.status(200).json({ msg: "webhook received successfully." });
+    res.status(200).json({ success: true, message: "webhook received successfully." });
   } catch (error) {
-    console.log(error);
+    res.status(400).json({ success: false, message: error.message });
   }
 });
 

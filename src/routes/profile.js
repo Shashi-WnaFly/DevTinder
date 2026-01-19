@@ -11,9 +11,9 @@ const validator = require("validator");
 router.get("/profile/view", userAuth, async (req, res) => {
   try {
     const user = req.user;
-    res.send(user);
-  } catch (err) {
-    res.status(401).send("ERROR : " + err.message);
+    res.json({ success: true, data: user });
+  } catch (error) {
+    res.status(400).send({ success: false, message: error.message });
   }
 });
 
@@ -22,17 +22,17 @@ router.post("/profile/edit", userAuth, async (req, res) => {
     if (!validateEditProfile(req)) throw new Error("Invalid edit field!!!!");
 
     const user = req.user;
-
     Object.keys(req.body).forEach((key) => (user[key] = req.body[key]));
 
     const updatedData = await user.save();
 
     res.json({
+      success: true,
       message: `${user.firstName}, Your profile updated successfully.`,
       data: updatedData,
     });
-  } catch (err) {
-    res.status(400).send("ERROR : " + err.message);
+  } catch (error) {
+    res.status(400).send({ success: false, message: error.message });
   }
 });
 
@@ -43,15 +43,15 @@ router.patch("/profile/password", userAuth, async (req, res) => {
       throw new Error("Please Enter A Strong Password As A New Password!!");
 
     if (!validatePasswordUpdate(req))
-      throw new Error("Password was not correct!!!");
+      throw new Error("password is not correct!!!");
 
     const passwordHash = await bcrypt.hash(password, 10);
     const user = req.user;
     user.password = passwordHash;
-    user.save();
-    res.send("Password Updated Successfully.");
-  } catch (err) {
-    res.status(400).send("ERROR : " + err.message);
+    await user.save();
+    res.json({ success: true, message: "password updated successfully." });
+  } catch (error) {
+    res.status(400).send({ success: false, message: error.message });
   }
 });
 

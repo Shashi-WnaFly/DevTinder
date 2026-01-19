@@ -71,7 +71,6 @@ const initializeSocket = (server) => {
             },
           ],
         });
-        console.log(friend);
         if (!friend) {
           throw new Error({ message: "Credentials are invalid!!!" });
         }

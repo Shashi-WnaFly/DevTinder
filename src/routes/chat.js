@@ -1,6 +1,7 @@
 const express = require("express");
 const { userAuth } = require("../middlewares/auth");
 const Chat = require("../models/chat");
+const ConnectionRequest = require("../models/request");
 const chatRouter = express.Router();
 
 chatRouter.get("/chat/:targetUserId", userAuth, async (req, res) => {
@@ -14,14 +15,14 @@ chatRouter.get("/chat/:targetUserId", userAuth, async (req, res) => {
       },
     });
 
-    if (!chat) return res.json(chat);
+    if (!chat) return res.json({success: true, data: []});
 
     res.json({
+      success: true,
       data: chat?.messages,
-      message: "messages fetched successfully.",
     });
   } catch (error) {
-    console.log(error);
+    res.json({ success: false, message: error.message });
   }
 });
 
