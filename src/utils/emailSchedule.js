@@ -28,7 +28,7 @@ cron.schedule("00 08 * * *", async () => {
       );
     }
   } catch (err) {
-    console.log(err + "");
+    console.error(err);
   }
 });
 
