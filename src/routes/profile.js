@@ -1,10 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { userAuth } = require("../middlewares/auth");
-const {
-  validateEditProfile,
-  validatePasswordUpdate,
-} = require("../utils/validation");
+const { validateEditProfile } = require("../utils/validation");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
 
@@ -36,16 +33,18 @@ router.post("/profile/edit", userAuth, async (req, res) => {
   }
 });
 
-router.patch("/profile/password", userAuth, async (req, res) => {
+router.patch("/profile/password/change", userAuth, async (req, res) => {
   try {
-    const { password } = req.params;
-    if (!validator.isStrongPassword(password))
-      throw new Error("Please Enter A Strong Password As A New Password!!");
+    const { prePassword, newPassword } = req.body;
 
-    if (!validatePasswordUpdate(req))
-      throw new Error("password is not correct!!!");
+    if (!validator.isStrongPassword(newPassword))
+      throw new Error("please enter a strong password as a new password!!");
 
-    const passwordHash = await bcrypt.hash(password, 10);
+    const isPassword = await bcrypt.compare(prePassword, req.user.password);
+
+    if (!isPassword) throw new Error("password is not correct!!!");
+
+    const passwordHash = await bcrypt.hash(newPassword, 10);
     const user = req.user;
     user.password = passwordHash;
     await user.save();
