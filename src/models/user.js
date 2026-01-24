@@ -75,6 +75,21 @@ const userSchema = new mongoose.Schema(
           throw new Error("Invalid photo url address!!");
       },
     },
+    verifyOtp: {
+      type: String,
+      default: null,
+      minLength: 6,
+      maxLength: 6,
+      trim: true,
+    },
+    otpExpireAt: {
+      type: Date,
+      default: null,      
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
