@@ -1,11 +1,17 @@
 const express = require("express");
 const router = express.Router();
+const crypto = require("crypto");
 const { userAuth } = require("../middlewares/auth");
 const ConnectionRequest = require("../models/request");
 const USER_SAFE_DATA = "firstName lastName photoUrl age skills gender about";
 const User = require("../models/user");
 const sendEmail = require("../utils/sendEmail");
+const {
+  EMAIL_RESET_TEMPLATE,
+  EMAIL_VERIFY_TEMPLATE,
+} = require("../utils/constants");
 const validator = require("validator");
+const emailTransporter = require("../config/emailTransporter");
 
 router.get("/user/requests/received", userAuth, async (req, res) => {
   try {
@@ -45,7 +51,11 @@ router.get("/user/connections", userAuth, async (req, res) => {
       return row.fromUserId;
     });
 
-    res.json({ success: true, message: "Connections fetched successfully.", data: data });
+    res.json({
+      success: true,
+      message: "Connections fetched successfully.",
+      data: data,
+    });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
   }
@@ -89,7 +99,7 @@ router.post("/user/send/email", userAuth, async (req, res) => {
 
     if (name.length < 3 || name.length > 30)
       throw new Error("Please enter a valid name.");
-    
+
     for (let str of name.split(" ")) {
       if (!validator.isAlpha(str))
         throw new Error("Please don't use symbol in your name.");
@@ -106,10 +116,51 @@ router.post("/user/send/email", userAuth, async (req, res) => {
 
     await sendEmail.run(subject, `${name}<br/>${message}<br />${fromAddress}`);
 
-    res.json({ success: true, message: "Message sent — we will get back to you soon!" });
+    res.json({
+      success: true,
+      message: "Message sent — we will get back to you soon!",
+    });
   } catch (error) {
     res.status(201).json({ success: false, message: error.message });
   }
 });
 
+router.post("/user/sendOtp",async (req, res) => {
+  try {
+    const { emailId, type } = req.body;
+    if (!validator.isEmail(emailId)) throw new Error("Invalid emailId");
+
+    const user = await User.findOne({emailId: emailId});
+    if (!user) throw new Error("User not found!!!");
+    const otp = crypto.randomInt(100001, 999999).toString(); // more secure than Math.random
+    let emailTemplate;
+    let subject;
+    if (type === "reset") {
+      emailTemplate = EMAIL_RESET_TEMPLATE.replace("{{otp}}", otp).replace(
+        "{{email}}",
+        emailId,
+      );
+      subject = "TinderDev Reset Password OTP";
+    } else {
+      emailTemplate = EMAIL_VERIFY_TEMPLATE.replace("{{otp}}", otp).replace(
+        "{{email}}",
+        emailId,
+      );
+      subject = "TinderDev Email Verification OTP";
+    }
+    const options = {
+      to: emailId,
+      from: process.env.SENDER_EMAIL,
+      subject: subject,
+      html: emailTemplate,
+    };
+    await emailTransporter.sendMail(options);
+    user.verifyOtp = otp;
+    user.otpExpireAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes from now
+    await user.save()
+    res.json({ success: true, message: "OTP sent to your emailId." });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+});
 module.exports = router;
