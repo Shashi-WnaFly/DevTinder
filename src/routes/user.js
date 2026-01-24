@@ -7,11 +7,12 @@ const USER_SAFE_DATA = "firstName lastName photoUrl age skills gender about";
 const User = require("../models/user");
 const sendEmail = require("../utils/sendEmail");
 const {
-  EMAIL_RESET_TEMPLATE,
+  PASSWORD_RESET_TEMPLATE,
   EMAIL_VERIFY_TEMPLATE,
 } = require("../utils/constants");
 const validator = require("validator");
 const emailTransporter = require("../config/emailTransporter");
+const bcrypt = require("bcrypt");
 
 router.get("/user/requests/received", userAuth, async (req, res) => {
   try {
@@ -136,7 +137,7 @@ router.post("/user/send/otp", async (req, res) => {
     let emailTemplate;
     let subject;
     if (type === "reset") {
-      emailTemplate = EMAIL_RESET_TEMPLATE.replace("{{otp}}", otp).replace(
+      emailTemplate = PASSWORD_RESET_TEMPLATE.replace("{{otp}}", otp).replace(
         "{{email}}",
         emailId,
       );
@@ -166,7 +167,7 @@ router.post("/user/send/otp", async (req, res) => {
 
 router.post("/user/verify/otp", async (req, res) => {
   try {
-    const { emailId, otp, type } = req.body;
+    const { emailId, otp, type, pass, confirmpass } = req.body;
     if (!validator.isEmail(emailId)) throw new Error("Invalid emailId");
     const user = await User.findOne({ emailId: emailId });
     if (!user) throw new Error("User not found!!!");
@@ -174,6 +175,13 @@ router.post("/user/verify/otp", async (req, res) => {
     if (user.verifyOtp !== otp) throw new Error("Invalid OTP!!!");
     if (type === "verify") {
       user.isVerified = true;
+    } else {
+      if (!pass || !confirmpass) throw new Error("missing details!!!");
+      if (pass !== confirmpass) throw new Error("passwords do not match!!!");
+      if (!validator.isStrongPassword(pass))
+        throw new Error("Weak password!!!");
+      const passwordHash = await bcrypt.hash(pass, 10);
+      user.password = passwordHash;
     }
     user.verifyOtp = null;
     user.otpExpireAt = null;
