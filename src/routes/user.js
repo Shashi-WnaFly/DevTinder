@@ -125,12 +125,12 @@ router.post("/user/send/email", userAuth, async (req, res) => {
   }
 });
 
-router.post("/user/sendOtp",async (req, res) => {
+router.post("/user/send/otp", async (req, res) => {
   try {
     const { emailId, type } = req.body;
     if (!validator.isEmail(emailId)) throw new Error("Invalid emailId");
 
-    const user = await User.findOne({emailId: emailId});
+    const user = await User.findOne({ emailId: emailId });
     if (!user) throw new Error("User not found!!!");
     const otp = crypto.randomInt(100001, 999999).toString(); // more secure than Math.random
     let emailTemplate;
@@ -157,8 +157,28 @@ router.post("/user/sendOtp",async (req, res) => {
     await emailTransporter.sendMail(options);
     user.verifyOtp = otp;
     user.otpExpireAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes from now
-    await user.save()
+    await user.save();
     res.json({ success: true, message: "OTP sent to your emailId." });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+});
+
+router.post("/user/verify/otp", async (req, res) => {
+  try {
+    const { emailId, otp, type } = req.body;
+    if (!validator.isEmail(emailId)) throw new Error("Invalid emailId");
+    const user = await User.findOne({ emailId: emailId });
+    if (!user) throw new Error("User not found!!!");
+    if (user.otpExpireAt < new Date()) throw new Error("OTP expired!!!");
+    if (user.verifyOtp !== otp) throw new Error("Invalid OTP!!!");
+    if (type === "verify") {
+      user.isVerified = true;
+    }
+    user.verifyOtp = null;
+    user.otpExpireAt = null;
+    await user.save();
+    res.json({ success: true, message: "OTP verified successfully." });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
