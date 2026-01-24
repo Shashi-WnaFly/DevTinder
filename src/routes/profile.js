@@ -37,6 +37,8 @@ router.patch("/profile/password/change", userAuth, async (req, res) => {
   try {
     const { prePassword, newPassword } = req.body;
 
+    if (!prePassword || !newPassword) throw new Error("missing details!!!");
+
     if (!validator.isStrongPassword(newPassword))
       throw new Error("please enter a strong password as a new password!!");
 
