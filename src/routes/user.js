@@ -126,31 +126,17 @@ router.post("/user/send/email", userAuth, async (req, res) => {
   }
 });
 
-router.post("/user/send/otp", async (req, res) => {
+router.post("/user/send/otp", userAuth, async (req, res) => {
   try {
-    const { emailId, type } = req.body;
-    if (!validator.isEmail(emailId)) throw new Error("Invalid emailId");
-
-    const user = await User.findOne({ emailId: emailId });
-    if (!user) throw new Error("User not found!!!");
+    const user = req.user;
     const otp = crypto.randomInt(100001, 999999).toString(); // more secure than Math.random
-    let emailTemplate;
-    let subject;
-    if (type === "reset") {
-      emailTemplate = PASSWORD_RESET_TEMPLATE.replace("{{otp}}", otp).replace(
-        "{{email}}",
-        emailId,
-      );
-      subject = "TinderDev Reset Password OTP";
-    } else {
-      emailTemplate = EMAIL_VERIFY_TEMPLATE.replace("{{otp}}", otp).replace(
-        "{{email}}",
-        emailId,
-      );
-      subject = "TinderDev Email Verification OTP";
-    }
+    const emailTemplate = EMAIL_VERIFY_TEMPLATE.replace("{{otp}}", otp).replace(
+      "{{email}}",
+      user.emailId,
+    );
+    const subject = "TinderDev Email Verification OTP";
     const options = {
-      to: emailId,
+      to: user.emailId,
       from: process.env.SENDER_EMAIL,
       subject: subject,
       html: emailTemplate,
@@ -165,26 +151,17 @@ router.post("/user/send/otp", async (req, res) => {
   }
 });
 
-router.post("/user/verify/otp", async (req, res) => {
+router.post("/user/verify/otp", userAuth, async (req, res) => {
   try {
-    const { emailId, otp, type, pass, confirmpass } = req.body;
-    if (!validator.isEmail(emailId)) throw new Error("Invalid emailId");
-    const user = await User.findOne({ emailId: emailId });
-    if (!user) throw new Error("User not found!!!");
+    const user = req.user;
+    const { otp } = req.body;
+    if (!otp) throw new Error("Missing OTP!!!");
+    if (otp !== user.verifyOtp) throw new Error("Invalid OTP!!!");
     if (user.otpExpireAt < new Date()) throw new Error("OTP expired!!!");
-    if (user.verifyOtp !== otp) throw new Error("Invalid OTP!!!");
-    if (type === "verify") {
-      user.isVerified = true;
-    } else {
-      if (!pass || !confirmpass) throw new Error("missing details!!!");
-      if (pass !== confirmpass) throw new Error("passwords do not match!!!");
-      if (!validator.isStrongPassword(pass))
-        throw new Error("Weak password!!!");
-      const passwordHash = await bcrypt.hash(pass, 10);
-      user.password = passwordHash;
-    }
+
     user.verifyOtp = null;
     user.otpExpireAt = null;
+    user.isVerified = true;
     await user.save();
     res.json({ success: true, message: "OTP verified successfully." });
   } catch (error) {
