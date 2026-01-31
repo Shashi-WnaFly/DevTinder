@@ -4,6 +4,10 @@ const bcrypt = require("bcrypt");
 const { signupValidation } = require("../utils/validation");
 const User = require("../models/user");
 const validator = require("validator");
+const { default: isEmail } = require("validator/lib/isEmail");
+const Crypto = require("crypto");
+const { PASSWORD_RESET_TEMPLATE } = require("../utils/constants");
+const emailTransporter = require("../config/emailTransporter");
 
 router.post("/signup", async (req, res) => {
   try {
@@ -43,7 +47,7 @@ router.post("/login", async (req, res) => {
       res.json({ success: true, data: user });
     } else throw new Error("Invalid credentials");
   } catch (err) {
-    res.status(400).json({ success: false, message: err.message });
+    res.status(400).json({ success: false, message: err.message, data: null });
   }
 });
 
@@ -51,6 +55,35 @@ router.post("/logout", (req, res) => {
   res
     .cookie("token", null, { expires: new Date(Date.now()) })
     .json({ success: true, message: "logout successful." });
+});
+
+router.post("/send/otp", async (req, res) => {
+  try {
+    const { emailId } = req.body;
+    if (!isEmail(emailId)) throw new Error("Invalid email address!!!");
+    const user = await User.findOne({ emailId: emailId });
+    if (!user) throw new Error("An Error occurred!!!");
+    const otp = Crypto.randomInt(100001, 999999).toString();
+    const emailTemplate = PASSWORD_RESET_TEMPLATE.replace(
+      "{{otp}}",
+      otp,
+    ).replace("{{email}}", emailId);
+    const sub = "TinderDev Password Reset OTP";
+    const options = {
+      to: emailId,
+      from: process.env.SENDER_EMAIL,
+      subject: sub,
+      html: emailTemplate,
+    };
+    await emailTransporter.sendMail(options);
+
+    user.verifyOtp = otp;
+    user.otpExpireAt = new Date(Date.now() + 30 * 60 * 1000);
+    await user.save();
+    res.json({ success: true, message: "OTP sent to your emailId." });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
 });
 
 module.exports = router;
