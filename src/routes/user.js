@@ -7,7 +7,6 @@ const USER_SAFE_DATA = "firstName lastName photoUrl age skills gender about";
 const User = require("../models/user");
 const sendEmail = require("../utils/sendEmail");
 const {
-  PASSWORD_RESET_TEMPLATE,
   EMAIL_VERIFY_TEMPLATE,
 } = require("../utils/constants");
 const validator = require("validator");

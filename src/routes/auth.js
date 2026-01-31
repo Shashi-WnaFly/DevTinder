@@ -86,4 +86,40 @@ router.post("/send/otp", async (req, res) => {
   }
 });
 
+router.post("/verify/otp", async (req, res) => {
+  try {
+    const { emailId, otp } = req.body;
+    if (!otp) throw new Error("Missing OTP!!!");
+    if (!isEmail(emailId)) throw new Error("Invalid email address!!!");
+    const user = await User.findOne({ emailId: emailId });
+    if (!user) throw new Error("Invalid credentials");
+    if (otp !== user.verifyOtp) throw new Error("Invalid OTP!!!");
+    if (user.otpExpireAt < new Date()) throw new Error("OTP expired!!!");
+    user.verifyOtp = null;
+    user.isVerified = true;
+    await user.save();
+    res.json({ success: true, message: "OTP verified successfully." });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+});
+
+router.post("/reset/password", async (req, res) => {
+  try {
+    const { emailId, newPass, confirmPass } = req.body;
+    if (!isEmail(emailId)) throw new Error("Invalid email address!!!");
+    if (newPass !== confirmPass) throw new Error("passwords do not match!!!");
+    const user = await User.findOne({ emailId: emailId });
+    if (!user) throw new Error("Invalid credentials");
+    if (user.otpExpireAt < new Date()) throw new Error("session expired!!!");
+    const hashPassword = await bcrypt.hash(newPass, 10);
+    user.password = hashPassword;
+    user.otpExpireAt = null;
+    await user.save();
+    res.json({ success: true, message: "Password reset successfully." });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+});
+
 module.exports = router;
