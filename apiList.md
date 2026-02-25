@@ -4,11 +4,15 @@
 - POST /signup
 - POST /login
 - POST /logout
+- POST /send/otp
+- POST /verify/otp
+- POST /reset/password
 
 ## profileRouter
 - Get /profile/view
 - PATCH /profile/edit
 - PATCH /profile/password
+- PATCH /profile/password/change
 
 ## connectionRequestRouter
 - POST /request/send/interested/:userId
