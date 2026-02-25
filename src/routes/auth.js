@@ -78,7 +78,7 @@ router.post("/send/otp", async (req, res) => {
     await emailTransporter.sendMail(options);
 
     user.verifyOtp = otp;
-    user.otpExpireAt = new Date(Date.now() + 30 * 60 * 1000);
+    user.otpExpireAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
     await user.save();
     res.json({ success: true, message: "OTP sent to your emailId." });
   } catch (error) {
