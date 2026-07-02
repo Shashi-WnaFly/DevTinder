@@ -98,7 +98,7 @@ const initializeSocket = (server) => {
         const roomId = getSecretRoomId(loggedUserId, targetUserId);
         io.to(roomId).emit("messageReceived", { senderId: loggedUserId, text });
       } catch (error) {
-        console.log();
+        console.error(error);
       }
     });
 

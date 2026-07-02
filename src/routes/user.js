@@ -11,7 +11,6 @@ const {
 } = require("../utils/constants");
 const validator = require("validator");
 const emailTransporter = require("../config/emailTransporter");
-const bcrypt = require("bcrypt");
 
 router.get("/user/requests/received", userAuth, async (req, res) => {
   try {
