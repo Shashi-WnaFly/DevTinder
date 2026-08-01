@@ -58,7 +58,7 @@ router.post(
     try {
       const loggedInUser = req.user;
       const { status, requestId } = req.params;
-
+      console.log()
       if (!["accepted", "rejected"].includes(status))
         throw new Error(`${status}, is not valid`);
 

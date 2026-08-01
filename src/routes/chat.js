@@ -8,7 +8,7 @@ chatRouter.get("/chat/:targetUserId", userAuth, async (req, res) => {
   try {
     const { targetUserId } = req.params;
     const loggedUserId = req.user._id;
-    const page = parseInt(req.body.page) || 1;
+    const page = parseInt(req.query.page) || 1;
     const limit = 20;
 
     const chat = await Chat.findOne({
