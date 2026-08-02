@@ -3,7 +3,6 @@ const router = express.Router();
 const { userAuth } = require("../middlewares/auth");
 const User = require("../models/user");
 const ConnectionRequest = require("../models/request");
-const sendEmail = require("../utils/sendEmail");
 
 router.post("/request/send/:status/:toUserId", userAuth, async (req, res) => {
   try {
@@ -39,8 +38,6 @@ router.post("/request/send/:status/:toUserId", userAuth, async (req, res) => {
 
     const data = await curConnectionRequest.save();
 
-    const emailRes = await sendEmail.run();
-
     res.json({
       success: true,
       message: "your connection request send successfully.",
@@ -58,7 +55,6 @@ router.post(
     try {
       const loggedInUser = req.user;
       const { status, requestId } = req.params;
-      console.log()
       if (!["accepted", "rejected"].includes(status))
         throw new Error(`${status}, is not valid`);
 

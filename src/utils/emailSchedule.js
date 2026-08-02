@@ -1,7 +1,8 @@
 const cron = require("node-cron");
 const { subDays, startOfDay, endOfDay } = require("date-fns");
 const ConnectionRequest = require("../models/request");
-const sendEmail = require("./sendEmail");
+const emailTransporter = require("../config/emailTransporter");
+const { EMAIL_PENDING_REQUEST } = require("./constants");
 
 cron.schedule("00 08 * * *", async () => {
   try {
@@ -17,16 +18,31 @@ cron.schedule("00 08 * * *", async () => {
       },
     }).populate("toUserId");
 
-    const listOfEmails = [
-      ...new Set(pendingRequests.map((req) => req.toUserId.emailId)),
-    ];
+    const set = new Set();
+    const listOfUsers = [];
 
-    for (const email of listOfEmails) {
-      await sendEmail.run(
-        `Pending friend request to ${email}`,
-        "There are so many friend request are pending, please login and accept or reject."
-      );
+    pendingRequests.map((req) => {
+      if(!set.has(req.toUserId.emailId)){
+        listOfUsers.push(req);
+        set.add(req.toUserId.emailId);
+      }
+    })
+
+    let request_notify = EMAIL_PENDING_REQUEST.replace(
+      "{{company_name}}",
+      "TinderDev",
+    ).replace("{{current_year}}", new Date().getFullYear());
+
+    for (const user of listOfUsers) {
+      request_notify = request_notify.replace("{{recipient_name}}", user.toUserId.name);
+      await emailTransporter.sendMail({
+        from: "noreply@tinderdev.co.in",
+        to: user.toUserId.emailId,
+        subject: "You have new connection requests",
+        html: request_notify,
+      });
     }
+
   } catch (err) {
     console.error(err);
   }

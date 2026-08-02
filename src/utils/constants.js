@@ -223,3 +223,56 @@ export const PASSWORD_RESET_TEMPLATE = `
 </html>
 `
 
+export const EMAIL_PENDING_REQUEST = `<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <title>You have new connection requests</title>
+    <!-- Replace the {{placeholders}} before sending. -->
+  </head>
+  <body style="margin:0; padding:0; background-color:#f4f6f8; font-family:Arial, Helvetica, sans-serif; color:#1f2937;">
+    <div style="display:none; max-height:0; overflow:hidden; opacity:0; mso-hide:all;">
+      You have {{pending_request_count}} connection requests waiting for you.
+    </div>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#f4f6f8;">
+      <tr>
+        <td align="center" style="padding:32px 16px;">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; background-color:#ffffff; border-radius:12px; overflow:hidden;">
+            <tr>
+              <td style="padding:28px 40px; background-color:#0f766e;">
+                <a href="{{website_url}}" style="font-size:22px; font-weight:bold; color:#ffffff; text-decoration:none;">{{company_name}}</a>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:40px 40px 16px;">
+                <h1 style="margin:0 0 16px; font-size:28px; line-height:36px; color:#111827;">Your network is waiting</h1>
+                <p style="margin:0; font-size:16px; line-height:24px;">Hi {{recipient_name}},</p>
+                <p style="margin:20px 0 0; font-size:16px; line-height:24px;">
+                  You have <strong>connection requests</strong> waiting for your response on {{company_name}}.
+                </p>
+                <p style="margin:16px 0 0; font-size:16px; line-height:24px;">
+                  Review the requests to grow your network and stay connected with people who want to know you.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td align="center" style="padding:24px 40px 40px;">
+                <a href="{{connection_requests_url}}" style="display:inline-block; padding:14px 24px; background-color:#0f766e; border-radius:6px; color:#ffffff; font-size:16px; font-weight:bold; text-decoration:none;">Review connection requests</a>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:24px 40px; border-top:1px solid #e5e7eb;">
+                <p style="margin:0; font-size:13px; line-height:20px; color:#6b7280;">
+                  You received this email because you have pending connection requests on {{company_name}}. You can manage email preferences in your <a href="{{notification_settings_url}}" style="color:#0f766e; text-decoration:underline;">notification settings</a>.
+                </p>
+                <p style="margin:12px 0 0; font-size:13px; line-height:20px; color:#6b7280;">© {{current_year}} {{company_name}}. All rights reserved.</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`
