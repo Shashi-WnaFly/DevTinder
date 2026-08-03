@@ -5,9 +5,9 @@ const { userAuth } = require("../middlewares/auth");
 const ConnectionRequest = require("../models/request");
 const USER_SAFE_DATA = "firstName lastName photoUrl age skills gender about";
 const User = require("../models/user");
-const sendEmail = require("../utils/sendEmail");
 const {
   EMAIL_VERIFY_TEMPLATE,
+  CONTACT_US_EMAIL,
 } = require("../utils/constants");
 const validator = require("validator");
 const emailTransporter = require("../config/emailTransporter");
@@ -104,16 +104,28 @@ router.post("/user/send/email", userAuth, async (req, res) => {
         throw new Error("Please don't use symbol in your name.");
     }
 
-    if (!validator.isEmail(fromAddress) || fromAddress.length > 30)
+    if (!validator.isEmail(fromAddress))
       throw new Error("Please enter a valid emailId.");
 
-    if (subject.length < 3 || subject.length > 30)
+    if (subject.length < 3 || subject.length > 50)
       throw new Error("Please add a valid subject.");
 
     if (!message.length || message.length > 200)
       throw new Error("Please add a valid message.");
 
-    await sendEmail.run(subject, `${name}<br/>${message}<br />${fromAddress}`);
+    const email_template = CONTACT_US_EMAIL.replace("{{user_name}}", name)
+      .replace("{{user_email}}", fromAddress)
+      .replace("{{subject}}", subject)
+      .replace("{{message}}", message);
+
+    const options = {
+      to: "shashianand2600@gmail.com",
+      from: process.env.SENDER_EMAIL,
+      subject: subject,
+      html: email_template,
+    };
+
+    await emailTransporter.sendMail(options);
 
     res.json({
       success: true,
@@ -166,4 +178,5 @@ router.post("/user/verify/otp", userAuth, async (req, res) => {
     res.status(400).json({ success: false, message: error.message });
   }
 });
+
 module.exports = router;

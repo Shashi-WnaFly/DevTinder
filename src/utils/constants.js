@@ -1,6 +1,6 @@
 export const subscriptionAmount = {
-    "silver": "499",
-    "gold": "799"
+  silver: "499",
+  gold: "799",
 };
 
 export const EMAIL_VERIFY_TEMPLATE = `
@@ -111,7 +111,7 @@ export const EMAIL_VERIFY_TEMPLATE = `
 </body>
 </html>
 
-`
+`;
 
 export const PASSWORD_RESET_TEMPLATE = `
 
@@ -221,7 +221,7 @@ export const PASSWORD_RESET_TEMPLATE = `
   </table>
 </body>
 </html>
-`
+`;
 
 export const EMAIL_PENDING_REQUEST = `<!doctype html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
@@ -275,4 +275,60 @@ export const EMAIL_PENDING_REQUEST = `<!doctype html>
       </tr>
     </table>
   </body>
-</html>`
+</html>`;
+
+export const CONTACT_US_EMAIL = `<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <title>New contact form submission</title>
+    <!-- Replace the {{placeholders}} with your email service variables. -->
+  </head>
+  <body style="margin:0; padding:0; background-color:#f4f6f8; font-family:Arial, Helvetica, sans-serif; color:#1f2937;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#f4f6f8;">
+      <tr>
+        <td align="center" style="padding:32px 16px;">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; background-color:#ffffff; border-radius:12px; overflow:hidden;">
+            <tr>
+              <td style="padding:28px 40px; background-color:#0f766e;">
+                <a href="{{website_url}}" style="font-size:22px; font-weight:bold; color:#ffffff; text-decoration:none;">{{company_name}}</a>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:40px;">
+                <h1 style="margin:0 0 12px; font-size:26px; line-height:34px; color:#111827;">New message from your website</h1>
+                <p style="margin:0 0 28px; font-size:16px; line-height:24px; color:#4b5563;">A visitor has contacted {{company_name}}.</p>
+
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1px solid #e5e7eb; border-radius:8px;">
+                  <tr>
+                    <td style="width:130px; padding:14px 16px; border-bottom:1px solid #e5e7eb; background-color:#f9fafb; font-size:14px; font-weight:bold; color:#374151;">Name</td>
+                    <td style="padding:14px 16px; border-bottom:1px solid #e5e7eb; font-size:15px; line-height:22px; color:#111827;">{{user_name}}</td>
+                  </tr>
+                  <tr>
+                    <td style="width:130px; padding:14px 16px; border-bottom:1px solid #e5e7eb; background-color:#f9fafb; font-size:14px; font-weight:bold; color:#374151;">Email</td>
+                    <td style="padding:14px 16px; border-bottom:1px solid #e5e7eb; font-size:15px; line-height:22px;"><a href="mailto:{{user_email}}" style="color:#0f766e; text-decoration:underline;">{{user_email}}</a></td>
+                  </tr>
+                  <tr>
+                    <td style="width:130px; padding:14px 16px; border-bottom:1px solid #e5e7eb; background-color:#f9fafb; font-size:14px; font-weight:bold; color:#374151;">Subject</td>
+                    <td style="padding:14px 16px; border-bottom:1px solid #e5e7eb; font-size:15px; line-height:22px; color:#111827;">{{subject}}</td>
+                  </tr>
+                  <tr>
+                    <td valign="top" style="width:130px; padding:14px 16px; background-color:#f9fafb; font-size:14px; font-weight:bold; color:#374151;">Message</td>
+                    <td style="padding:14px 16px; font-size:15px; line-height:24px; color:#111827; white-space:pre-line;">{{message}}</td>
+                  </tr>
+                </table>
+
+                <p style="margin:28px 0 0; font-size:14px; line-height:22px; color:#6b7280;">Reply directly to this email or use the sender's email address above.</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:20px 40px; border-top:1px solid #e5e7eb; font-size:12px; line-height:18px; color:#6b7280;">This notification was sent from the {{company_name}} website contact form.</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
