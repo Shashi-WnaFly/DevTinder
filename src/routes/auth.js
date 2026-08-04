@@ -22,7 +22,12 @@ router.post("/signup", async (req, res) => {
     });
     const signUpUser = await user.save();
     const token = await signUpUser.getJWT();
-    res.cookie("token", token, { expires: new Date(Date.now() + 9000000) });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    });
     res.json({ success: true, data: signUpUser });
   } catch (err) {
     res.status(404).json({ success: false, message: err.message });
@@ -43,7 +48,12 @@ router.post("/login", async (req, res) => {
 
     if (isPasswordMatch) {
       const token = await user.getJWT();
-      res.cookie("token", token, { expires: new Date(Date.now() + 9000000) });
+      res.cookie("token", token, { 
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      });
       res.json({ success: true, data: user });
     } else throw new Error("Invalid credentials");
   } catch (err) {
