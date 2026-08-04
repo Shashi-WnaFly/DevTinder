@@ -9,7 +9,7 @@ require("./utils/emailSchedule");
 const port = process.env.PORT || 7777;
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://dev-tinder-web-plum-five.vercel.app",
   credentials: true
 }));
 app.use(express.json());
