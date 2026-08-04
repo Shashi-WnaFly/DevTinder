@@ -115,6 +115,10 @@ router.post("/user/send/email", userAuth, async (req, res) => {
 
     const email_template = CONTACT_US_EMAIL.replace("{{user_name}}", name)
       .replace("{{user_email}}", fromAddress)
+      .replace("{{user_email}}", fromAddress)
+      .replace("{{company_name}}", "TinderDev.com")
+      .replace("{{company_name}}", "TinderDev.com")
+      .replace("{{company_name}}", "TinderDev.com")
       .replace("{{subject}}", subject)
       .replace("{{message}}", message);
 
