@@ -21,6 +21,7 @@ const userRouter = require("./routes/user");
 const paymentRouter = require("./routes/payment");
 const chatRouter = require("./routes/chat");
 const initializeSocket = require('./utils/socket');
+const port = process.env.PORT || 7777;
 
 const server = http.createServer(app);
 
@@ -36,8 +37,8 @@ app.use("/", chatRouter);
 connectDB()
   .then(() => {
     console.log("database is successfully connected.");
-    server.listen(process.env.PORT, () => {
-      console.log("Server is successfully running....");
+    server.listen(port, () => {
+      console.log(`Server is successfully running on port ${port}....`);
     });
   })
   .catch(() => {
